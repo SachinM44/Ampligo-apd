@@ -1,13 +1,14 @@
+require('dotenv').config();
 const {exec} = require('child_process')
 const fs= require('fs')
 const path = require('path')
 const mime=require('mime-types')
 const {S3Client , PutObjectAclCommand, S3Client, PutObjectCommand}= require('@aws-sdk/client-s3')
 const S3Client =new S3Client({
-    region:'',
+    region:'Europe (Stockholm) eu-north-1',
     Credential:{
-        accessKeyId:0,
-        secretAccessKey:0,
+        accessKeyId:process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY,
     }
 })
 const PROJECT_ID=process.env.PROJECT_ID;
@@ -32,15 +33,17 @@ async function init() {
 
         for(const filePath of distFolderContents ){
             if(fs.lstatSync(filePath).isDirectory()) continue;
-         
+         console.log('uploading', filePath)
             const cammand=new PutObjectCommand({
-                Bucket:'',
+                Bucket:'ampligo-apd',
                 Key:`__output/${PROJECT_ID}/${filePath}`,
                 Body: fs.createReadStream(filePath),
                 ContentType: mime.lookup(filePath)
             })
             await S3Client.send(cammand)
+            console.log('uploaded',filePath);
         }
         console.log('Done....')
     })
 }
+init();
