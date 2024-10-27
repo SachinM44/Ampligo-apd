@@ -1,0 +1,20 @@
+FROM ubuntu:focal
+# i use ubuntu as the base image with the focal version
+RUN apt-get update 
+# it will update the all pcakeges of the ubuntu 
+RUN apt-get install -y curl
+# i use curl to make api calls here
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
+    # i use node.js here to build the source code 
+RUN apt-get upgrade -y 
+#apps get upgraded here 
+RUN apt-get install -y nodejs
+# nodejs installed inside the project 
+RUN apt-get install git -y
+#git is needed 
+
+WORKDIR /home/app
+COPY main.sh main.sh
+
+ENTRYPOINT [ "/home/app/main.sh" ]
+
